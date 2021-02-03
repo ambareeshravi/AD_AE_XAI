@@ -2,30 +2,41 @@ from tensorflow.python.keras.models import Model, load_model, Sequential
 try: from tensorflow.python.keras.callbacks.callbacks import ModelCheckpoint
 except:  from tensorflow.python.keras.callbacks import ModelCheckpoint
 from tensorflow.python.keras.layers import *
+from tensorflow.python.keras import activations
 from tensorflow.python.keras import backend as K
 from tensorflow.python.keras.optimizers import Adam
 from tensorflow.python.keras.layers import Lambda
 
-activation_dict = {
-    "relu": ReLU(),
-    "leaky_relu": LeakyReLU(alpha = 0.2),
-    "sigmoid": Lambda(lambda x: (1 / (1 + K.exp(-x))))
-}
 
-def C2D_BN_A(filters, kernel_size, strides, padding = "valid", useBias = True, activation = "relu", name = ""):
-    model = Sequential()
-    model.add(Conv2D(filters = filters, kernel_size = kernel_size, strides = strides, padding = padding, use_bias=useBias, name = name + "_Conv2D"))
-    model.add(BatchNormalization(name = name + "_BatchNorm2D"))
-    model.add(activation_dict[activation])
-    return model
+def get_activation(activation_type):
+    activation_type = activation_type.lower()
+    if "relu" in activation_type: return activations.relu
+    elif "sigmoid" in activation_type: return activations.sigmoid
 
-def CT2D_BN_A(filters, kernel_size, strides, padding = "valid", useBias = True, activation = "leaky_relu", name = ""):
-    model = Sequential()
-    model.add(Conv2DTranspose(filters = filters, kernel_size = kernel_size, strides = strides, padding = padding, use_bias=useBias, name = name + "_Conv2DTranspose"))
-    model.add(BatchNormalization(name = name + "_BatchNorm2D"))
-    model.add(activation_dict[activation])
-    return model
+class C2D_BN_A:
+    def __init__(self, filters, kernel_size, strides, padding = "valid", useBias = True, activation = "relu", name = ""):
+        self.conv = Conv2D(filters = filters, kernel_size = kernel_size, strides = strides, padding = padding, use_bias=useBias, name = name + "_Conv2D")
+        self.bn = BatchNormalization(name = name + "_BatchNorm2D")
+        self.act = get_activation(activation)
+        
+    def __call__(self, inputs):
+        conv_out = self.conv(inputs)
+        bn_out = self.bn(conv_out)
+        act_out = self.act(bn_out)
+        return act_out
 
+class CT2D_BN_A:
+    def __init__(self, filters, kernel_size, strides, padding = "valid", useBias = True, activation = "relu", name = ""):
+        self.conv = Conv2DTranspose(filters = filters, kernel_size = kernel_size, strides = strides, padding = padding, use_bias=useBias, name = name + "_ConvTranspose2D")
+        self.bn = BatchNormalization(name = name + "_BatchNorm2D")
+        self.act = get_activation(activation)
+        
+    def __call__(self, inputs):
+        conv_out = self.conv(inputs)
+        bn_out = self.bn(conv_out)
+        act_out = self.act(bn_out)
+        return act_out
+    
 class C2D_ACB:
     def __init__(self, filters, kernel_size = 3, strides = 2, padding = "same", useBias = True, activation = "relu", name = ""):
         self.conv_v = Conv2D(filters, kernel_size=(kernel_size, 1), strides = strides, padding = "same", name = name + "_Conv2D_V")
@@ -39,7 +50,7 @@ class C2D_ACB:
         m_out = self.conv_m(inputs)
         added_out = Add()([v_out, m_out, h_out])
         bn_out = BatchNormalization()(added_out)
-        act_out = activation_dict[self.activation](bn_out)
+        act_out = get_activation(self.activation)(bn_out)
         return act_out
 
 class CT2D_ACB:
@@ -55,7 +66,7 @@ class CT2D_ACB:
         m_out = self.conv_m(inputs)
         added_out = Add()([v_out, m_out, h_out])
         bn_out = BatchNormalization()(added_out)
-        act_out = activation_dict[self.activation](bn_out)
+        act_out = get_activation(self.activation)(bn_out)
         return act_out
 
 class ContractiveLoss:

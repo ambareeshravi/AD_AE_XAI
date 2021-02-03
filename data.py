@@ -59,7 +59,7 @@ class HAM10000:
             self.abnormal_data = dict([(anomaly_type, sef.read_images(anomalous_files)) for (anomaly_type, anomalous_files) in self.abnormal_test_files.items()])
     
     def read_images(self, files):
-        return np.array([read_image(file, self.image_size)/255. for file in files])
+        return np.array([read_image(file, self.image_size).astype(np.float32)/255. for file in files])
                            
     def train_batch_generator(self):
         while True:
