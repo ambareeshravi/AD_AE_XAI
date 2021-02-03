@@ -17,6 +17,7 @@ class Trainer:
         self.model_name = join_paths([self.model_path, "model-{epoch:02d}-{val_accuracy:.2f}.hdf5"])
         
     def get_optmizer(self, optimizer_type, learning_rate):
+
         if "adam" in optimizer_type.lower():
             optimizer = Adam(lr = learning_rate)
         elif "sgd" in optimizer_type.lower():
@@ -40,13 +41,21 @@ class Trainer:
         callbacks = [
             ModelCheckpoint(self.model_name, monitor = "val_loss", verbose = 1, save_best_only = True, mode='min')
         ]
-        optimizer = self.get_optmizer(optimizer_type, learning_rate)
+        
+        lr_scheduled = schedules.ExponentialDecay(
+            initial_learning_rate = learning_rate,
+            decay_steps=(20 * len(self.dataset.train_data) // batch_size),
+            decay_rate=0.75,
+            staircase=True
+        )
+        
+        optimizer = self.get_optmizer(optimizer_type, lr_scheduled)
         self.model.compile(loss = "mse", optimizer = optimizer)
         self.model.fit_generator(
             self.dataset.train_batch_generator(),
             validation_data = self.dataset.train_batch_generator(),
             epochs = epochs,
-            steps_per_epoch = len(self.dataset.train_data) / batch_size,
+            steps_per_epoch = len(self.dataset.train_data) // batch_size,
             shuffle = True,
             validation_steps = 1,
             callbacks = callbacks
@@ -61,7 +70,7 @@ if __name__ == "__main__":
     IMAGE_SIZE = 128
     CHANNELS = 3
     VAL_SPLIT  = 0.05
-    EPOCHS = 2
+    EPOCHS = 300
     BATCH_SIZE = 32
     LEARNING_RATE = 1e-3
     
