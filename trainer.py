@@ -16,14 +16,14 @@ class Trainer:
         self.dataset = dataset
         self.model_name = join_paths([self.model_path, "model-{epoch:02d}-{val_accuracy:.2f}.hdf5"])
         
-    def get_optmizer(self, optimizer_type, learning_rate):
+    def get_optmizer(self, optimizer_type, learning_rate, epochs = None):
 
         if "adam" in optimizer_type.lower():
             optimizer = Adam(lr = learning_rate)
         elif "sgd" in optimizer_type.lower():
             optimizer = SGD(lr = learning_rate)
         elif "grad" in optimizer_type.lower():
-            optimizer = Adagrad(lr = learning_rate)
+            optimizer = Adagrad(lr = learning_rate, decay = learning_rate/epochs)
         elif "rms" in optimizer_type.lower():
             optimizer = RMSprop(lr = learning_rate)
         else:
@@ -41,15 +41,8 @@ class Trainer:
         callbacks = [
             ModelCheckpoint(self.model_name, monitor = "val_loss", verbose = 1, save_best_only = True, mode='min')
         ]
-        
-        lr_scheduled = schedules.ExponentialDecay(
-            initial_learning_rate = learning_rate,
-            decay_steps=(20 * len(self.dataset.train_data) // batch_size),
-            decay_rate=0.75,
-            staircase=True
-        )
-        
-        optimizer = self.get_optmizer(optimizer_type, lr_scheduled)
+              
+        optimizer = self.get_optmizer(optimizer_type, learning_rate, epochs)
         self.model.compile(loss = "mse", optimizer = optimizer)
         self.model.fit_generator(
             self.dataset.train_batch_generator(),
