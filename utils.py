@@ -45,3 +45,9 @@ def join_paths(paths):
 def read_directory_contents(directory):
     if "*" not in directory: directory = join_paths([directory, "*"])
     return sorted(glob(directory))
+
+def INFO(*list_of_strings):
+    list_of_strings = list(list_of_strings)
+    print("-"*40)
+    print("\n".join(list_of_strings))
+    print("-"*40)

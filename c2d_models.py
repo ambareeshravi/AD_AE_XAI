@@ -16,9 +16,11 @@ class C2D_AE_128_3x3:
         if self.useACB:
             self.conv_layer = C2D_ACB
             self.conv_transpose_layer = CT2D_ACB
+            self.__name__ = "C2D_AE_128_3x3"
         else:
             self.conv_layer = C2D_BN_A
             self.conv_transpose_layer = CT2D_BN_A
+            self.__name__ = "C2D_ACB_AE_128_3x3"
             
         self.model = self.get_model()
             

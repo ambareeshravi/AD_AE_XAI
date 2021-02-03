@@ -4,7 +4,7 @@ except:  from tensorflow.python.keras.callbacks import ModelCheckpoint
 from tensorflow.python.keras.layers import *
 from tensorflow.python.keras import activations
 from tensorflow.python.keras import backend as K
-from tensorflow.python.keras.optimizers import Adam
+from tensorflow.python.keras.optimizers import Adam, SGD, Adagrad, RMSprop
 from tensorflow.python.keras.layers import Lambda
 
 
