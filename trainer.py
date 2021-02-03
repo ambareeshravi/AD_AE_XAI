@@ -14,7 +14,7 @@ class Trainer:
         self.model_path = model_path
         if not os.path.exists: os.mkdir(self.model_path)
         self.dataset = dataset
-        self.model_name = join_paths([self.model_path, "model-{epoch:02d}-{val_accuracy:.2f}.hdf5"])
+        self.model_name = join_paths([self.model_path, "model-{val_loss:.3f}.h5"])
         
     def get_optmizer(self, optimizer_type, learning_rate, epochs = None):
 
