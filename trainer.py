@@ -3,6 +3,8 @@ from utils import *
 from data import *
 from c2d_models import *
 
+from tester import *
+
 class Trainer:
     def __init__(
         self,
@@ -67,7 +69,7 @@ if __name__ == "__main__":
     BATCH_SIZE = 32
     LEARNING_RATE = 1e-3
     
-    dataset = IR_DISTRACTION(
+    dataset = HAM10000(
         batch_size = BATCH_SIZE,
         val_split = VAL_SPLIT,
         image_size = IMAGE_SIZE,
@@ -77,16 +79,24 @@ if __name__ == "__main__":
     c2d_model = C2D_AE_128_3x3(input_shape = IMAGE_SIZE, channels = CHANNELS)
     INFO("Model ready")
     
-    trainer = Trainer(
+    ae_trainer = Trainer(
         c2d_model.model,
         model_path = join_paths(["dummy", c2d_model.__name__]),
         dataset = dataset
     )
     INFO("Started Training")
-    trained_model = trainer.train(
+    trained_model = ae_trainer.train(
         learning_rate = LEARNING_RATE,
         epochs = EPOCHS,
         batch_size = BATCH_SIZE,
         optimizer_type = "adam",
         loss = "mse"
     )
+    
+    INFO("Testing the Trained Model")
+    test_data = HAM10000(isTrain=False, useAllTestData=True)
+    ae_tester = Tester(
+        trained_model,
+        test_data
+    )
+    results = ae_tester.test(True)

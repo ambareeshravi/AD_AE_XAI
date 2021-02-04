@@ -32,7 +32,7 @@ class HAM10000:
             if not deriving: self.create_train_data()
         else:
             self.normal_test_dir = join_paths([self.data_path, "NORMAL_TEST", "nv"])
-            self.abnormal_test_dir = join_paths([self.data_path, "ABNORMAL_TEST"])
+            self.abnormal_test_dir = join_paths([self.data_path, "ABNORMAL"])
             if not deriving: self.create_test_data()
     
     def create_train_data(self,):
@@ -44,6 +44,7 @@ class HAM10000:
     def create_test_data(self,):
         self.normal_test_files = read_directory_contents(self.normal_test_dir)
         self.abnormal_test_files = dict()
+        
         for folder in read_directory_contents(self.abnormal_test_dir):
             anomaly_type = folder.split("/")[-1].lower()
             self.abnormal_test_files[anomaly_type] = read_directory_contents(join_paths([folder, anomaly_type]))
@@ -54,9 +55,9 @@ class HAM10000:
             for anomaly_type, anomalous_files in self.abnormal_test_files.items():
                 self.abnormal_test_files[anomaly_type] = np.random.choice(anomalous_files, self.size)
 
-            # read data and labels [normal, abnormal] for testing
-            self.normal_data = self.read_images(self.normal_test_files)
-            self.abnormal_data = dict([(anomaly_type, sef.read_images(anomalous_files)) for (anomaly_type, anomalous_files) in self.abnormal_test_files.items()])
+        # read data and labels [normal, abnormal] for testing
+        self.normal_data = self.read_images(self.normal_test_files)
+        self.abnormal_data = dict([(anomaly_type, self.read_images(anomalous_files)) for (anomaly_type, anomalous_files) in self.abnormal_test_files.items()])
     
     def read_images(self, files):
         return np.array([read_image(file, self.image_size).astype(np.float32)/255. for file in files])
