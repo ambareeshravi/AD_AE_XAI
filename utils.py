@@ -2,6 +2,7 @@ import os
 import numpy as np
 import json
 import pickle as pkl
+import matplotlib.pyplot as plt
 
 from PIL import Image
 from glob import glob

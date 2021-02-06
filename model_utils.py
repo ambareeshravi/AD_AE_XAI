@@ -1,3 +1,4 @@
+import tensorflow as tf
 from keras.models import Model, load_model, Sequential
 try: from keras.callbacks.callbacks import ModelCheckpoint
 except: from keras.callbacks import ModelCheckpoint
@@ -5,18 +6,17 @@ from keras.layers import *
 from keras import activations
 from keras import backend as K
 from keras.optimizers import Adam, SGD, Adagrad, RMSprop
-from keras.layers import Lambda
 
 def get_activation(activation_type):
     activation_type = activation_type.lower()
-    if "relu" in activation_type: return activations.relu
-    elif "sigmoid" in activation_type: return activations.sigmoid
+    if "relu" in activation_type: return tf.nn.relu
+    elif "sigmoid" in activation_type: return tf.nn.sigmoid
 
 class C2D_BN_A:
     def __init__(self, filters, kernel_size, strides, padding = "valid", useBias = True, activation = "relu", name = ""):
         self.conv = Conv2D(filters = filters, kernel_size = kernel_size, strides = strides, padding = padding, use_bias=useBias, name = name + "_Conv2D")
         self.bn = BatchNormalization(name = name + "_BatchNorm2D")
-        self.act = Lambda(get_activation(activation))
+        self.act = Activation(get_activation(activation), name = name + "_%s"%(activation))
         
     def __call__(self, inputs):
         conv_out = self.conv(inputs)
@@ -28,7 +28,7 @@ class CT2D_BN_A:
     def __init__(self, filters, kernel_size, strides, padding = "valid", useBias = True, activation = "relu", name = ""):
         self.conv = Conv2DTranspose(filters = filters, kernel_size = kernel_size, strides = strides, padding = padding, use_bias=useBias, name = name + "_ConvTranspose2D")
         self.bn = BatchNormalization(name = name + "_BatchNorm2D")
-        self.act = Lambda(get_activation(activation))
+        self.act = Activation(get_activation(activation), name = name + "_%s"%(activation))
         
     def __call__(self, inputs):
         conv_out = self.conv(inputs)
@@ -49,7 +49,7 @@ class C2D_ACB:
         m_out = self.conv_m(inputs)
         added_out = Add()([v_out, m_out, h_out])
         bn_out = BatchNormalization()(added_out)
-        act_out = Lambda(get_activation(self.activation))(bn_out)
+        act_out = Activation(get_activation(self.activation), name = name + "_%s"%(activation))(bn_out)
         return act_out
 
 class CT2D_ACB:
@@ -65,7 +65,7 @@ class CT2D_ACB:
         m_out = self.conv_m(inputs)
         added_out = Add()([v_out, m_out, h_out])
         bn_out = BatchNormalization()(added_out)
-        act_out = Lambda(get_activation(self.activation))(bn_out)
+        act_out = Activation(get_activation(self.activation), name = name + "_%s"%(activation))(bn_out)
         return act_out
 
 class ContractiveLoss:
