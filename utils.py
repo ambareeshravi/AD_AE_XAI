@@ -46,6 +46,9 @@ def read_directory_contents(directory):
     if "*" not in directory: directory = join_paths([directory, "*"])
     return sorted(glob(directory))
 
+def create_directory(path):
+    if not os.path.exists(path): os.mkdir(path)
+        
 def INFO(*list_of_strings):
     list_of_strings = list(list_of_strings)
     print("-"*40)

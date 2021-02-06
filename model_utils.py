@@ -1,13 +1,11 @@
-from tensorflow.python.keras.models import Model, load_model, Sequential
-try: from tensorflow.python.keras.callbacks.callbacks import ModelCheckpoint
-except:  from tensorflow.python.keras.callbacks import ModelCheckpoint
-from tensorflow.python.keras.layers import *
-from tensorflow.python.keras import activations
-from tensorflow.python.keras import backend as K
-from tensorflow.python.keras.optimizers import Adam, SGD, Adagrad, RMSprop
-from tensorflow.keras.optimizers import schedules
-from tensorflow.python.keras.layers import Lambda
-
+from keras.models import Model, load_model, Sequential
+try: from keras.callbacks.callbacks import ModelCheckpoint
+except: from keras.callbacks import ModelCheckpoint
+from keras.layers import *
+from keras import activations
+from keras import backend as K
+from keras.optimizers import Adam, SGD, Adagrad, RMSprop
+from keras.layers import Lambda
 
 def get_activation(activation_type):
     activation_type = activation_type.lower()
@@ -86,3 +84,11 @@ class ContractiveLoss:
         dh = h * (1 - h)  # N_batch x N_hidden
         contractive = self.lam * K.sum(dh**2 * K.sum(W**2, axis=1), axis=1)
         return mse + contractive
+
+# For explainability
+def get_scorer_model(model, max_value = 400, input_shape = (128,128,3)):
+    model_out = model(model.inputs)
+    loss = Lambda(lambda x: K.expand_dims(K.sum((model.inputs-x)**2, axis = (-3,-2,-1))/max_value, axis=-1))(model_out)
+    new_model = Model(model.inputs, loss)
+    new_model.build(input_shape)
+    return new_model

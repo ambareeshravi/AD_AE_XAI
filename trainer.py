@@ -16,7 +16,7 @@ class Trainer:
         self.model_path = model_path
         if not os.path.exists: os.mkdir(self.model_path)
         self.dataset = dataset
-        self.model_name = join_paths([self.model_path, "model-{val_loss:.3f}.h5"])
+        self.model_name = join_paths([self.model_path, "model.h5"])
         
     def get_optmizer(self, optimizer_type, learning_rate, epochs = None):
 
@@ -68,6 +68,7 @@ if __name__ == "__main__":
     EPOCHS = 300
     BATCH_SIZE = 32
     LEARNING_RATE = 1e-3
+    DATASET = "HAM10000"
     
     dataset = HAM10000(
         batch_size = BATCH_SIZE,
@@ -76,12 +77,14 @@ if __name__ == "__main__":
         isTrain = True
     )
     INFO("Data loaded")
-    c2d_model = C2D_AE_128_3x3(input_shape = IMAGE_SIZE, channels = CHANNELS)
+    c2d_model = C2D_AE_128_3x3(input_shape = IMAGE_SIZE, channels = CHANNELS, useACB = True)
     INFO("Model ready")
+    MODEL_PATH = join_paths(["dummy", "%s_%s"%(c2d_model.__name__, DATASET)])
+    create_directory(MODEL_PATH)
     
     ae_trainer = Trainer(
         c2d_model.model,
-        model_path = join_paths(["dummy", c2d_model.__name__]),
+        model_path = MODEL_PATH,
         dataset = dataset
     )
     INFO("Started Training")
