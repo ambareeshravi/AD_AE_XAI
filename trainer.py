@@ -68,18 +68,19 @@ if __name__ == "__main__":
     EPOCHS = 300
     BATCH_SIZE = 32
     LEARNING_RATE = 1e-3
-    DATASET = "HAM10000"
+    DATASET = "IR_DISTRACTION"
+    SAVE_TO = "trained_models/"
     
-    dataset = HAM10000(
+    dataset = IR_DISTRACTION(
         batch_size = BATCH_SIZE,
         val_split = VAL_SPLIT,
         image_size = IMAGE_SIZE,
         isTrain = True
     )
     INFO("Data loaded")
-    c2d_model = C2D_AE_128_3x3(input_shape = IMAGE_SIZE, channels = CHANNELS, useACB = True)
+    c2d_model = C2D_AE_128_3x3(input_shape = IMAGE_SIZE, channels = CHANNELS)
     INFO("Model ready")
-    MODEL_PATH = join_paths(["dummy", "%s_%s"%(c2d_model.__name__, DATASET)])
+    MODEL_PATH = join_paths([SAVE_TO, "%s_%s"%(c2d_model.__name__, DATASET)])
     create_directory(MODEL_PATH)
     
     ae_trainer = Trainer(
@@ -97,7 +98,7 @@ if __name__ == "__main__":
     )
     
     INFO("Testing the Trained Model")
-    test_data = HAM10000(isTrain=False, useAllTestData=True)
+    test_data = IR_DISTRACTION(isTrain=False, useAllTestData=True)
     ae_tester = Tester(
         trained_model,
         test_data

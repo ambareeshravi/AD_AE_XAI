@@ -16,7 +16,7 @@ class C2D_BN_A:
     def __init__(self, filters, kernel_size, strides, padding = "valid", useBias = True, activation = "relu", name = ""):
         self.conv = Conv2D(filters = filters, kernel_size = kernel_size, strides = strides, padding = padding, use_bias=useBias, name = name + "_Conv2D")
         self.bn = BatchNormalization(name = name + "_BatchNorm2D")
-        self.act = get_activation(activation)
+        self.act = Lambda(get_activation(activation))
         
     def __call__(self, inputs):
         conv_out = self.conv(inputs)
@@ -28,7 +28,7 @@ class CT2D_BN_A:
     def __init__(self, filters, kernel_size, strides, padding = "valid", useBias = True, activation = "relu", name = ""):
         self.conv = Conv2DTranspose(filters = filters, kernel_size = kernel_size, strides = strides, padding = padding, use_bias=useBias, name = name + "_ConvTranspose2D")
         self.bn = BatchNormalization(name = name + "_BatchNorm2D")
-        self.act = get_activation(activation)
+        self.act = Lambda(get_activation(activation))
         
     def __call__(self, inputs):
         conv_out = self.conv(inputs)
@@ -49,7 +49,7 @@ class C2D_ACB:
         m_out = self.conv_m(inputs)
         added_out = Add()([v_out, m_out, h_out])
         bn_out = BatchNormalization()(added_out)
-        act_out = get_activation(self.activation)(bn_out)
+        act_out = Lambda(get_activation(self.activation))(bn_out)
         return act_out
 
 class CT2D_ACB:
@@ -65,7 +65,7 @@ class CT2D_ACB:
         m_out = self.conv_m(inputs)
         added_out = Add()([v_out, m_out, h_out])
         bn_out = BatchNormalization()(added_out)
-        act_out = get_activation(self.activation)(bn_out)
+        act_out = Lambda(get_activation(self.activation))(bn_out)
         return act_out
 
 class ContractiveLoss:
