@@ -2,3 +2,4 @@ tensorflow==1.5.0
 keras==2.3.1
 lime
 keras-explain
+git+https://github.com/marcoancona/DeepExplain.git#egg=deepexplain
