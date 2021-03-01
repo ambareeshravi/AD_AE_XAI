@@ -1,0 +1,9 @@
+1. CounterFactuals
+2. LIME [Framework Done - Yes][Analysis Done - No]
+3. GradCAM [Framework Done - Yes][Analysis Done - No]
+4. SHAP
+5. DeepLIFT
+6. LRP [Framework Done - Yes][Analysis Done - No]
+
+7. Train models with ACB, DeNoising and Weighted Similarity - out of curiosity to find out difference in performance or on visualizing the explanations
+8. 
