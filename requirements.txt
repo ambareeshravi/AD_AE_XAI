@@ -3,3 +3,4 @@ keras==2.3.1
 lime
 keras-explain
 git+https://github.com/marcoancona/DeepExplain.git#egg=deepexplain
+shap
