@@ -55,3 +55,10 @@ def INFO(*list_of_strings):
     print("-"*40)
     print("\n".join(list_of_strings))
     print("-"*40)
+    
+def normalize(x):
+    return (x - x.min())/(x.max() - x.min())
+
+def im_to_255(x):
+    if x.max() <= 1: return (x*255).astype(np.uint8)
+    return x
