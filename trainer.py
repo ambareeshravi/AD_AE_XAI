@@ -63,15 +63,15 @@ if __name__ == "__main__":
     will edit and make it a better implementation later
     '''
     IMAGE_SIZE = 128
-    CHANNELS = 3
+    CHANNELS = 1 # Chest_XRay
     VAL_SPLIT  = 0.05
     EPOCHS = 300
     BATCH_SIZE = 32
     LEARNING_RATE = 1e-3
-    DATASET = "IR_DISTRACTION"
+    DATASET = "Chest_XRay"
     SAVE_TO = "trained_models/"
     
-    dataset = IR_DISTRACTION(
+    dataset = Chest_XRay(
         batch_size = BATCH_SIZE,
         val_split = VAL_SPLIT,
         image_size = IMAGE_SIZE,
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     )
     
     INFO("Testing the Trained Model")
-    test_data = IR_DISTRACTION(isTrain=False, useAllTestData=True)
+    test_data = Chest_XRay(isTrain=False, useAllTestData=True)
     ae_tester = Tester(
         trained_model,
         test_data
