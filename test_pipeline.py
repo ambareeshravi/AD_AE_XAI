@@ -46,6 +46,7 @@ class Pipeline:
     def run_lime(self):
         _output_prefix = self.configuration['output_path']
         _output_path = '%slime/' % (_output_prefix)
+        create_directory(_output_path)
         _mask_features = self.configuration['lime']['mask_features']
         for key in self.test_dict.keys():
             self.lime_explainer.explain(self.test_dict[key], _output_path, _mask_features, key)
@@ -53,6 +54,7 @@ class Pipeline:
     def run_counterfactual(self):
         _output_prefix = self.configuration['output_path']
         _output_path = '%scounterfactual/' % (_output_prefix)
+        create_directory(_output_path)
         _threshold_pct = self.configuration['counterfactual']['threshold_pct']
         _block_size = self.configuration['counterfactual']['block_size']
 
