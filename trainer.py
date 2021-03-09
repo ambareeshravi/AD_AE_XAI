@@ -63,15 +63,15 @@ if __name__ == "__main__":
     will edit and make it a better implementation later
     '''
     IMAGE_SIZE = 128
-    CHANNELS = 1 # Chest_XRay
+    CHANNELS = 3
     VAL_SPLIT  = 0.05
     EPOCHS = 300
-    BATCH_SIZE = 32
-    LEARNING_RATE = 1e-3
-    DATASET = "Chest_XRay"
+    BATCH_SIZE = 64
+    LEARNING_RATE = 1e-4
+    DATASET = "HAM10000"
     SAVE_TO = "trained_models/"
     
-    dataset = Chest_XRay(
+    dataset = HAM10000(
         batch_size = BATCH_SIZE,
         val_split = VAL_SPLIT,
         image_size = IMAGE_SIZE,
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     )
     
     INFO("Testing the Trained Model")
-    test_data = Chest_XRay(isTrain=False, useAllTestData=True)
+    test_data = HAM10000(isTrain=False, useAllTestData=True)
     ae_tester = Tester(
         trained_model,
         test_data
