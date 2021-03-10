@@ -14,6 +14,7 @@ class LimeExplainer:
         self.batch_size = batch_size
         
     def explain(self, dataset, results_path, mask_features, anomaly_type, save_result = True):
+        results = list()
         for idx, data in enumerate(dataset):
             if not isinstance(data, np.ndarray): data = np.array(data)
             exp = self.explainer.explain_instance(
@@ -31,7 +32,8 @@ class LimeExplainer:
             )
             tmp = normalize(tmp)
             result_mask = mark_boundaries(tmp / 2 + 0.5, mask)
+            results.append(result_mask)
             result_mask = im_to_255(result_mask)
             result_mask = Image.fromarray(result_mask)
             if save_result: result_mask.save('%s%s-%02d.png' % (results_path, anomaly_type, idx))
-            return result_mask
+        return results
