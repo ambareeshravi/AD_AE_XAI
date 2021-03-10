@@ -1,9 +1,7 @@
-import numpy as np
 from utils import *
 
 from lime import lime_image
 from skimage.segmentation import mark_boundaries
-from PIL import Image
 
 class LimeExplainer:
     def __init__(self, model, num_features, num_samples = 1000, batch_size = 64):
@@ -13,7 +11,7 @@ class LimeExplainer:
         self.num_samples = num_samples
         self.batch_size = batch_size
         
-    def explain(self, dataset, results_path, mask_features, anomaly_type, save_result = True):
+    def explain(self, dataset, results_path = "", mask_features = 5, anomaly_type = None, save_result = True):
         results = list()
         for idx, data in enumerate(dataset):
             if not isinstance(data, np.ndarray): data = np.array(data)
@@ -33,7 +31,5 @@ class LimeExplainer:
             tmp = normalize(tmp)
             result_mask = mark_boundaries(tmp / 2 + 0.5, mask)
             results.append(result_mask)
-            result_mask = im_to_255(result_mask)
-            result_mask = Image.fromarray(result_mask)
-            if save_result: result_mask.save('%s%s-%02d.png' % (results_path, anomaly_type, idx))
-        return results
+            if save_result: save_image(result_mask, join_paths([results_path, '%s_%02d.png' % (anomaly_type, idx)]))
+        return np.array(results)

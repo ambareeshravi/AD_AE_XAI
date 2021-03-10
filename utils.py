@@ -38,6 +38,14 @@ def read_image(image_path, resize_to = None):
         img = img.resize(resize_to)
     return np.array(img)
 
+def save_image(image_array, file_path):
+    try:
+        Image.fromarray(im_to_255(image_array)).save(file_path)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
 def join_paths(paths):
     path = ""
     for tag in paths:
