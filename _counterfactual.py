@@ -84,12 +84,14 @@ class Counterfactual:
         if not isinstance(anomalous_samples, np.ndarray): anomalous_samples = np.array(anomalous_samples)
         
         # Reconstructions and error calculations can be reduced to being done once
-        normal_reconstructions = self.model.predict(normal_samples)[0]
+        normal_reconstructions = self.model.predict(normal_samples)
         normal_mse = self.get_mse(normal_samples, normal_reconstructions)
         
-        anomalous_reconstructions = self.model.predict(anomalous_samples)[0]
+        anomalous_reconstructions = self.model.predict(anomalous_samples)
         anomalous_mse = self.get_mse(anomalous_samples, anomalous_reconstructions)
         
+        if self.debug: print("NORMAL:", normal_samples.shape, normal_reconstructions.shape, normal_mse.shape)
+        if self.debug: print("ANOMALY:", anomalous_samples.shape, anomalous_reconstructions.shape, anomalous_mse.shape)
         if self.debug: print("Models loaded. Starting analysis")
             
         # Run the counterfactual part
