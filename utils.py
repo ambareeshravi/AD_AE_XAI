@@ -8,6 +8,8 @@ from PIL import Image
 from glob import glob
 from tqdm import tqdm
 
+from c2d_models import *
+
 def load_json(file):
     if ".json" not in file: file += ".json"
     with open(file, "r") as f:

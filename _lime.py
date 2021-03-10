@@ -11,7 +11,7 @@ class LimeExplainer:
         self.num_samples = num_samples
         self.batch_size = batch_size
         
-    def explain(self, dataset, results_path = "", mask_features = 5, anomaly_type = None, save_result = True):
+    def explain(self, dataset, mask_features = 5, results_path = "", anomaly_type = None, save_result = True):
         results = list()
         for idx, data in enumerate(dataset):
             if not isinstance(data, np.ndarray): data = np.array(data)
