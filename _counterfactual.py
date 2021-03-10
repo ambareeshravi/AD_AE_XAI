@@ -103,5 +103,5 @@ class Counterfactual:
                     edits_made = minimum_edits(norm_image, anomaly_image, threshold, block_size, self.model)
                     masked_result = draw_boundaries(edits_made, anomaly_image)
                     results[norm_idx][anomaly_idx] = masked_result
-                    if save_results: join_paths([save_path, "%s_N-%d_A-%d.png"%(anomaly_type, norm_idx, anomaly_idx)])
+                    if save_results: save_image(masked_result, join_paths([save_path, "%s_N-%d_A-%d.png"%(anomaly_type, norm_idx, anomaly_idx)]))
         return results
