@@ -25,6 +25,9 @@ class SHAP_Explainer:
         self,
         blend_alpha = 0.85
     ):
+        '''
+        Different datasets need different alpha values for blending for better visualization
+        '''
         self.blend_alpha = blend_alpha
     
     def explain(

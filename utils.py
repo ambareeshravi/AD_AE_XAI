@@ -71,3 +71,9 @@ def normalize(x):
 def im_to_255(x):
     if x.max() <= 1: return (x*255).astype(np.uint8)
     return x
+
+def get_model(model_path, rec = True, max_value=1000):
+    if rec: model = C2D_AE_128_3x3(isTrain = True)
+    else: model = C2D_AE_128_3x3(isTrain = False, max_value = max_value)
+    model.model.load_weights(model_path)
+    return model.model
