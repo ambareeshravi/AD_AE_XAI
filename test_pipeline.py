@@ -12,7 +12,8 @@ confg = {
     'lime': {
         'batch_size': 32,
         'num_features': 128*128,
-        'mask_features': 5
+        'mask_features': 5,
+        'num_samples': 1000
     },
     'counterfactual': {
         'threshold_pct': 0.98,
@@ -35,6 +36,7 @@ class Pipeline:
 
         self.lime_explainer = LimeExplainer(loss_model,
                 configuration['lime']['num_features'],
+                configuration['lime']['num_samples'],
                 configuration['lime']['batch_size'])
 
         self.counterfactual_explainer = Counterfactual(model)
