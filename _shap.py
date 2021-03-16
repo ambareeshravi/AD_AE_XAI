@@ -18,40 +18,41 @@ cmap_rtb = plt.get_cmap(red_transparent_blue)
 class SHAP_Explainer:
     '''
     Class container for SHAP based explanation on images
+            model - <keras.Model> that returns probabilities with weights loaded -> get_model(rec = False)
+            X_train - <np.ndarray> - normal (train) images of shape N,W,H,C for setting background
+            background_samples - <int> - number of images to take expectations over
     
     https://github.com/slundberg/shap/blob/master/
     '''
     def __init__(
         self,
-        blend_alpha = 0.85
+        model, # loss
+        X_train,
+        blend_alpha = 0.85,
+        background_samples = 100
     ):
         '''
         Different datasets need different alpha values for blending for better visualization
         '''
         self.blend_alpha = blend_alpha
-    
-    def explain(
-        self,
-        model,
-        X_train,
-        X_test,
-        background_samples = 100
-    ):
-        '''
-        Args:
-            model - <keras.Model> that returns probabilities with weights loaded -> get_model(rec = False)
-            X_train - <np.ndarray> - normal (train) images of shape N,W,H,C for setting background
-            X_test - <np.ndarray> - test images of shape N,W,H,C for testing
-            background_samples - <int> - number of images to take expectations over
-        Returns:
-            outputs for visualization as <np.ndarray> N,W,H,C
-        '''
         # set of background examples to take an expectation over
         background = X_train[np.random.choice(X_train.shape[0], background_samples, replace=False)]
         # explain predictions of the model on four images
-        explainter = shap.DeepExplainer(model, background)
+        self.explainer = shap.DeepExplainer(model, background)
+    
+    def explain(
+        self,
+        X_test,
+    ):
+        '''
+        Args:
+            X_test - <np.ndarray> - test images of shape N,W,H,C for testing
+        Returns:
+            outputs for visualization as <np.ndarray> N,W,H,C
+        '''
+        
         # get shap values
-        shap_values = explainter.shap_values(X_test)
+        shap_values = self.explainer.shap_values(X_test)
         # get visualization with overlayed annotations
         return self.get_shap_vis(X_test, shap_values)
     
