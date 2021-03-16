@@ -14,7 +14,8 @@ class LimeExplainer:
     def explain(self, dataset, mask_features = 5, results_path = "", anomaly_type = None, save_result = True):
         results = list()
         for idx, data in enumerate(dataset):
-            if not isinstance(data, np.ndarray): data = np.array(data)
+#             if not isinstance(data, np.ndarray): data = np.array(data)
+                
             exp = self.explainer.explain_instance(
                 data.astype('double'),
                 self.model.predict,
