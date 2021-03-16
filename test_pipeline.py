@@ -76,7 +76,7 @@ class Pipeline:
         for (method_name, method) in zip(["e-LRP", "LIME", "CounterFactual", "SHAP"], [self.run_elrp, self.run_lime, self.run_counterfactual, self.run_shap]):
             INFO("%s ready"%(method_name))
             try: method(method_name)
-            except: print("%s failed"%(method_name))
+            except Exception as e: print("%s failed\nError: %s"%(method_name, e))
             
     def run_elrp(self, method_name):
         _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
@@ -84,7 +84,7 @@ class Pipeline:
         for key in self.test_dict.keys():
             lrp_results = self.lrp_explainer.explain(self.test_dict[key], batch_size = self.configuration['batch_size'])
             for idx, lrp_result in enumerate(lrp_results):
-                save_image(lrp_result, join_paths([_output_path, "%s_%d.png"%(key, idx)]))
+                save_image(lrp_result, join_paths([_output_path, "%HBox(children=(FloatProgress(value=0.0, max=1000.0), HTML(value='')))s_%d.png"%(key, idx)]))
 
     def run_lime(self, method_name):
         _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
@@ -118,7 +118,7 @@ class Pipeline:
         _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
         create_directory(_output_path)
         for key in self.test_dict.keys():
-            shap_results = self.shap_explainer = explain(
+            shap_results = self.shap_explainer.explain(
                 X_test = self.test_dict[key],
             )
             for idx, shap_result in enumerate(shap_results):
