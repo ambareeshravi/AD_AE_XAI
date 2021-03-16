@@ -36,6 +36,7 @@ confg = {
     'self.configuration': "",
     'max_loss_value': 1000,
     'batch_size': 32,
+    'data_name': ""
 }
 '''
 class Pipeline:
@@ -71,40 +72,56 @@ class Pipeline:
             background_samples = self.configuration['shap']['background_samples'],
             blend_alpha = self.configuration['shap']['blend_alpha'],
         ) if 'shap' in self.configuration.keys() else None
+        
+        self.results_dict = dict()
 
-    def run(self):
+    def run(self, save_results = True):
         for (method_name, method) in zip(["e-LRP", "LIME", "CounterFactual", "SHAP"], [self.run_elrp, self.run_lime, self.run_counterfactual, self.run_shap]):
             INFO("%s ready"%(method_name))
             try: method(method_name)
             except Exception as e: print("%s failed\nError: %s"%(method_name, e))
+        if save_results: dump_pickle(self.results_dict, join_paths([self.configuration["output_path"], self.configuration["data_name"]]))
+        
             
     def run_elrp(self, method_name):
         _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
         create_directory(_output_path)
+        
+        self.results_dict[method_name] = dict()
+        
         for key in self.test_dict.keys():
             lrp_results = self.lrp_explainer.explain(self.test_dict[key], batch_size = self.configuration['batch_size'])
+            self.results_dict[method_name][key] = lrp_results
             for idx, lrp_result in enumerate(lrp_results):
                 save_image(lrp_result, join_paths([_output_path, "%HBox(children=(FloatProgress(value=0.0, max=1000.0), HTML(value='')))s_%d.png"%(key, idx)]))
 
     def run_lime(self, method_name):
         _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
         create_directory(_output_path)
+        
         _mask_features = self.configuration['lime']['mask_features']
+        
+        self.results_dict[method_name] = dict()
+        
         for key in self.test_dict.keys():
-            self.lime_explainer.explain(
+            lime_results = self.lime_explainer.explain(
                 dataset = self.test_dict[key], mask_features = _mask_features, results_path = _output_path, anomaly_type = key, save_result = True
             )
+            self.results_dict[method_name][key] = lime_results
 
     def run_counterfactual(self, method_name):
         _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
         create_directory(_output_path)
+        
         _threshold_pct = self.configuration['counterfactual']['threshold_pct']
         _block_size = self.configuration['counterfactual']['block_size']
+        
+        self.results_dict[method_name] = dict()
 
         _norms = self.test_dict[self.normal_tag]
         for key in self.test_dict.keys():
             if key != self.normal_tag:
-                self.counterfactual_explainer.explain(
+                counterfactual_results = self.counterfactual_explainer.explain(
                     normal_samples = _norms,
                     anomalous_samples = self.test_dict[key],
                     threshold_pct = _threshold_pct, 
@@ -113,13 +130,18 @@ class Pipeline:
                     save_path = _output_path,
                     save_results = True
                 )
+                self.results_dict[method_name][key] = counterfactual_results
     
     def run_shap(self, method_name):
         _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
         create_directory(_output_path)
+        
+        self.results_dict[method_name] = dict()
+        
         for key in self.test_dict.keys():
             shap_results = self.shap_explainer.explain(
                 X_test = self.test_dict[key],
             )
+            self.results_dict[method_name][key] = shap_results
             for idx, shap_result in enumerate(shap_results):
                 save_image(shap_result, join_paths([_output_path, "%s_%d.png"%(key, idx)]))
