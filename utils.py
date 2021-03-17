@@ -80,3 +80,11 @@ def get_model(model_path, rec = True, max_value=1000):
     else: model = C2D_AE_128_3x3(isTrain = False, max_value = max_value)
     model.model.load_weights(model_path)
     return model.model
+
+def im_3(x, channel_axis = -1):
+    if len(x.shape) < 3:
+        x = np.expand_dims(x, axis = channel_axis)
+    if x.shape[channel_axis] < 3:
+        x = x.repeat((1 + 3 - x.shape[channel_axis]), axis = channel_axis)
+    return x
+        

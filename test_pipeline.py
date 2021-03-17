@@ -46,7 +46,9 @@ class Pipeline:
 
         self.test_dict = dict()
         for class_dir in read_directory_contents(self.configuration['test_data_path']):
-            self.test_dict[class_dir.split("/")[-1]] = np.array([read_image(file, resize_to=(128,128))/255. for file in read_directory_contents(class_dir)])
+            image_arrays = [read_image(file, resize_to=(128,128))/255. for file in read_directory_contents(class_dir)]
+            image_arrays = [im_3(ia) for ia in image_arrays]
+            self.test_dict[class_dir.split("/")[-1]] = np.array(image_arrays)
         
         self.lime_explainer = LimeExplainer(
             model = loss_model,
