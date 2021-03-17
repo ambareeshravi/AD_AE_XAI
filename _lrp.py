@@ -12,7 +12,7 @@ class E_LRP:
         self.model_path = model_path
         self.max_loss_value = max_loss_value
 
-    def explain(dataset, batch_size = 64):
+    def explain(self, dataset, batch_size = 64):
         with DeepExplain(session=K.get_session()) as de:
             # Model should be loaded under the de scope
             self.model = get_model(self.model_path, rec = True, max_value=self.max_loss_value)

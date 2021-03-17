@@ -13,11 +13,9 @@ Example self.configuration
 
 confg = {
     'lime': {
-        'batch_size': 32,
         'num_features': 128*128,
         'mask_features': 5,
         'num_samples': 1000,
-        'model_path': ""
     },
     'counterfactual': {
         'threshold_pct': 0.98,
@@ -28,7 +26,6 @@ confg = {
         'background_samples': 100
     },
     'elrp': {
-        'model_path': "",
         'max_loss_value': 1000
     },
     'output_path': "",
@@ -36,7 +33,8 @@ confg = {
     'train_data': None, # np.array of normal images
     'max_loss_value': 1000,
     'batch_size': 32,
-    'data_name': ""
+    'data_name': "",
+    'model_path': ""
 }
 '''
 class Pipeline:
@@ -54,7 +52,7 @@ class Pipeline:
             model = loss_model,
             num_features = self.configuration['lime']['num_features'],
             num_samples = self.configuration['lime']['num_samples'],
-            batch_size = self.configuration['lime']['batch_size']
+            batch_size = self.configuration['batch_size']
         ) if 'lime' in self.configuration.keys() else None
 
         self.counterfactual_explainer = Counterfactual(
@@ -62,8 +60,8 @@ class Pipeline:
         ) if 'counterfactual' in self.configuration.keys() else None
         
         self.lrp_explainer = E_LRP(
-            model_path = self.configuration['lime']['model_path'],
-            max_loss_value = self.configuration['lime']['max_loss_value']
+            model_path = self.configuration['model_path'],
+            max_loss_value = self.configuration['elrp']['max_loss_value']
         ) if 'elrp' in self.configuration.keys() else None
         
         self.shap_explainer = SHAP_Explainer(
@@ -83,34 +81,42 @@ class Pipeline:
         if save_results: dump_pickle(self.results_dict, join_paths([self.configuration["output_path"], self.configuration["data_name"]]))
         
     def run_elrp(self, method_name):
-        _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
+        _output_path = join_paths([self.configuration['output_path'], method_name, ""])
         create_directory(_output_path)
+        print("Saving to", _output_path)
         
         self.results_dict[method_name] = dict()
         
         for key in self.test_dict.keys():
-            lrp_results = self.lrp_explainer.explain(self.test_dict[key], batch_size = self.configuration['batch_size'])
+            lrp_results = self.lrp_explainer.explain(
+                dataset = self.test_dict[key],
+                batch_size = self.configuration['batch_size']
+            )
             self.results_dict[method_name][key] = lrp_results
             for idx, lrp_result in enumerate(lrp_results):
-                save_image(lrp_result, join_paths([_output_path, "%HBox(children=(FloatProgress(value=0.0, max=1000.0), HTML(value='')))s_%d.png"%(key, idx)]))
+                save_image(lrp_result, join_paths([_output_path, "s_%d.png"%(key, idx)]))
 
     def run_lime(self, method_name):
-        _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
+        _output_path = join_paths([self.configuration['output_path'], method_name, ""])
         create_directory(_output_path)
-        
-        _mask_features = self.configuration['lime']['mask_features']
+        print("Saving to", _output_path)
         
         self.results_dict[method_name] = dict()
         
         for key in self.test_dict.keys():
             lime_results = self.lime_explainer.explain(
-                dataset = self.test_dict[key], mask_features = _mask_features, results_path = _output_path, anomaly_type = key, save_result = True
+                dataset = self.test_dict[key],
+                mask_features = self.configuration['lime']['mask_features'],
+                results_path = _output_path,
+                anomaly_type = key,
+                save_result = True
             )
             self.results_dict[method_name][key] = lime_results
 
     def run_counterfactual(self, method_name):
-        _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
+        _output_path = join_paths([self.configuration['output_path'], method_name, ""])
         create_directory(_output_path)
+        print("Saving to", _output_path)
         
         _threshold_pct = self.configuration['counterfactual']['threshold_pct']
         _block_size = self.configuration['counterfactual']['block_size']
@@ -132,7 +138,8 @@ class Pipeline:
                 self.results_dict[method_name][key] = counterfactual_results
     
     def run_shap(self, method_name):
-        _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
+        _output_path = join_paths([self.configuration['output_path'], method_name, ""])
+        print("Saving to", _output_path)
         create_directory(_output_path)
         
         self.results_dict[method_name] = dict()
