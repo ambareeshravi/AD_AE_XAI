@@ -4,8 +4,8 @@ from data import *
 from c2d_models import *
 from test_pipeline import *
 
-model_path = "trained_models/C2D_AE_128_3x3_IR_DISTRACTION/model.h5"
-train_data = IR_DISTRACTION(isTrain = True)
+model_path = "trained_models/C2D_AE_128_3x3_MVTec/model.h5"
+train_data = MVTec(isTrain = True)
 output_path = join_paths(["results/", train_data.__name__, ""])
 create_directory(output_path)
 
@@ -40,3 +40,16 @@ loss_model = get_model(model_path, rec=False)
 
 p = Pipeline(rec_model, loss_model, config)
 p.run()
+
+# output_path = config["output_path"]
+# test_path = config['test_data_path']
+# for category_dir in read_directory_contents(test_path):
+#     category_type = os.path.split(category_dir)[-1]
+#     INFO(category_type)
+#     config["output_path"] = join_paths([output_path, category_type, ""])
+#     config['data_name'] = category_type
+#     create_directory(config["output_path"])
+#     config['test_data_path'] = category_dir
+    
+#     _pipline = Pipeline(rec_model, loss_model, config)
+#     _pipline.run()
