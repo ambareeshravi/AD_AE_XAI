@@ -16,7 +16,8 @@ confg = {
         'batch_size': 32,
         'num_features': 128*128,
         'mask_features': 5,
-        'num_samples': 1000
+        'num_samples': 1000,
+        'model_path': ""
     },
     'counterfactual': {
         'threshold_pct': 0.98,
