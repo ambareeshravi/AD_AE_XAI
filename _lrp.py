@@ -3,6 +3,8 @@ from deepexplain.tensorflow import DeepExplain
 from keras import backend as K
 from keras.models import Model
 
+from utils import *
+
 class E_LRP:
     def __init__(
         self,
@@ -19,4 +21,5 @@ class E_LRP:
             input_tensor = self.model.layers[0].input
             de_model = Model(inputs=input_tensor, outputs = self.model.layers[-1].output)
             target_tensor = de_model(input_tensor)
-            return de.explain("elrp", target_tensor, input_tensor, dataset, ys=dataset, batch_size=batch_size)
+            results = de.explain("elrp", target_tensor, input_tensor, dataset, ys=dataset, batch_size=batch_size)
+            return np.array([normalize(r) for r in results])

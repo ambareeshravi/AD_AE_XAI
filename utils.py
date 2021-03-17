@@ -42,7 +42,8 @@ def read_image(image_path, resize_to = None):
 
 def save_image(image_array, file_path):
     try:
-        Image.fromarray(im_to_255(image_array)).save(file_path)
+        image_array = im_to_255(image_array)
+        Image.fromarray(image_array).save(file_path)
         return True
     except Exception as e:
         print(e)

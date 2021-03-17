@@ -32,5 +32,5 @@ class LimeExplainer:
             tmp = normalize(tmp)
             result_mask = mark_boundaries(tmp / 2 + 0.5, mask)
             results.append(result_mask)
-            if save_result: save_image(result_mask, join_paths([results_path, '%s_%02d.png' % (anomaly_type, idx)]))
+            if save_result: save_image(im_to_255(result_mask), join_paths([results_path, '%s_%02d.png' % (anomaly_type, idx)]))
         return np.array(results)

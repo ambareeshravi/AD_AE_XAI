@@ -94,7 +94,7 @@ class Pipeline:
             )
             self.results_dict[method_name][key] = lrp_results
             for idx, lrp_result in enumerate(lrp_results):
-                save_image(lrp_result, join_paths([_output_path, "s_%d.png"%(key, idx)]))
+                save_image(lrp_result, join_paths([_output_path, "%s_%d.png"%(key, idx)]))
 
     def run_lime(self, method_name):
         _output_path = join_paths([self.configuration['output_path'], method_name, ""])

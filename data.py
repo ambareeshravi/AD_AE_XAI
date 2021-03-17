@@ -16,6 +16,7 @@ class HAM10000:
         random_state = 42,
         deriving = False
     ):
+        self.__name__ = "HAM10000"
         self.data_path = data_path
         self.batch_size = batch_size
         self.val_split = val_split
@@ -94,6 +95,7 @@ class IR_DISTRACTION(HAM10000):
         random_state = 42
     ):
         HAM10000.__init__(self, deriving = True)
+        self.__name__ = "IR_DISTRACTION"
         self.data_path = data_path
         self.batch_size = batch_size
         self.val_split = val_split
@@ -130,6 +132,7 @@ class MVTec(HAM10000):
         Download from: https://www.mvtec.com/company/research/datasets/mvtec-ad
         '''
         HAM10000.__init__(self, deriving = True)
+        self.__name__ = "MVTec"
         self.data_path = data_path
         self.batch_size = batch_size
         self.val_split = val_split
