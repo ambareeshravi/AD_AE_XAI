@@ -33,7 +33,6 @@ confg = {
     'output_path': "",
     'test_data_path': "",
     'train_data': None, # np.array of normal images
-    'self.configuration': "",
     'max_loss_value': 1000,
     'batch_size': 32,
     'data_name': ""
@@ -64,7 +63,7 @@ class Pipeline:
         self.lrp_explainer = E_LRP(
             model_path = self.configuration['lime']['model_path'],
             max_loss_value = self.configuration['lime']['max_loss_value']
-        ) if 'lrp' in self.configuration.keys() else None
+        ) if 'elrp' in self.configuration.keys() else None
         
         self.shap_explainer = SHAP_Explainer(
             model = self.loss_model,
@@ -82,7 +81,6 @@ class Pipeline:
             except Exception as e: print("%s failed\nError: %s"%(method_name, e))
         if save_results: dump_pickle(self.results_dict, join_paths([self.configuration["output_path"], self.configuration["data_name"]]))
         
-            
     def run_elrp(self, method_name):
         _output_path = join_paths([self.configuration['output_path'], method_name, "/"])
         create_directory(_output_path)
