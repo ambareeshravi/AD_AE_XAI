@@ -33,6 +33,8 @@ class SHAP_Explainer:
     ):
         '''
         Different datasets need different alpha values for blending for better visualization
+        
+        # 0.85 for IR_DISTRACTION
         '''
         self.blend_alpha = blend_alpha
         # set of background examples to take an expectation over
