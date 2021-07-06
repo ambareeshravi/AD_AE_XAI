@@ -1,9 +1,13 @@
+# imports
 from utils import *
 
 from skimage.metrics import mean_squared_error
 from skimage.segmentation import mark_boundaries
 
+# Helper functions
+
 def get_segments(img, height, width, imgheight, imgwidth):
+    # Returns segments of images given image array, height, width
     segments = []
     for i in range(0,imgheight, height):
         for j in range(0,imgwidth, width):
@@ -12,13 +16,16 @@ def get_segments(img, height, width, imgheight, imgwidth):
     return segments
 
 def calculate_error(_img1, _img2):
+    # Calculates the mean square error
     return mean_squared_error(_img1, _img2)
 
 def get_reconstruction(_img, model):
+    # predicts and returns the reconstruction for given input image
     _reshaped = _img.reshape((1, 128, 128, 3))
     return model.predict(_reshaped)[0]
 
 def minimum_edits(_img1, _img2, _threshold, _filter_size, model):
+    # Creates the minimum edits for counterfactual
     img_height = np.array(_img1).shape[0]
     img_width = np.array(_img1).shape[1]
     segs1 = get_segments(_img1, _filter_size, _filter_size, img_height, img_width)
@@ -49,6 +56,7 @@ def minimum_edits(_img1, _img2, _threshold, _filter_size, model):
     return edits
 
 def draw_boundaries(_edits, _img):
+    # draws the bounding boxes on the images
     masks = np.zeros((128, 128)).astype(int)
     for _edit in _edits:
         masks[_edit[0]: _edit[2], _edit[1]: _edit[3]] = 1
@@ -60,11 +68,16 @@ def draw_boundaries(_edits, _img):
 
 
 class Counterfactual:
+    '''
+    Class for counterfactual explanations
+    '''
     def __init__(self, model, debug = True):
+        # initiates the class
         self.model = model
         self.debug = debug
     
     def get_mse(self, a, b):
+        # Returns MSE for two images
         return ((a-b)**2).mean(axis = (1,2,3))
         
     def explain(
@@ -77,6 +90,7 @@ class Counterfactual:
         save_path = None,
         save_results = False
     ):
+        # Derives explanations
         results = dict()
         
         # Check for datatype
